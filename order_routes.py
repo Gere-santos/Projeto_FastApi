@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from dependency import pegar_funcao
 from sqlalchemy.orm import Session
-from dependency import pegar_funcao, verificar_token
+from dependency import pegar_funcao, verificar_token, Usuario
 from schemas import PedidoSchema
 from models import Pedido
 
@@ -21,12 +21,14 @@ async def criar_pedido(pedido_schema:PedidoSchema, session: Session = Depends(pe
     return {"mensagem": f"Pedido Criado com Sucesso. ID do pedido:{novo_pedido.id}"}
 
 @order_router.post("/pedido/cancelar/{id_pedido}")
-async def cancelar_pedido(id_pedido: int, session: Session = Depends(pegar_funcao)):
+async def cancelar_pedido(id_pedido: int, session: Session = Depends(pegar_funcao), usuario: Usuario = Depends(verificar_token)):
     pedido = session.query(Pedido).filter(Pedido.id==id_pedido).first()
     if not pedido:
         raise HTTPException(status_code=400, detail="Pedido não encontrado")
+    if not usuario.admin and usuario.id != pedido.usuario:
+        raise HTTPException(status_code=403, detail="Você não tem autorização para fazer essa modificação")
     pedido.status = "CANCELADO"
     session.commit()
-    return {"mensagem": f"Pedido número: {id_pedido} cancelado com sucesso!",
+    return {"mensagem": f"Pedido número: {pedido.id} cancelado com sucesso!",
             "pedido": pedido}
-
+ 
