@@ -55,8 +55,9 @@ async def adicionar_item_pedido(id_pedido: int, item_pedido_schema: ItemPedidoSc
                              item_pedido_schema.tamanho, 
                              item_pedido_schema.preco_unitario,
                              id_pedido) 
-    pedido.calcular_preco()
     session.add(item_pedido)
+    pedido.calcular_preco()
+    
     session.commit()
     return {
         "mensagem": "Item criado com sucesso",

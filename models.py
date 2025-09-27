@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, Column, String, Integer, Boolean, Float, ForeignKey
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy_utils.types import ChoiceType
 
 db = create_engine("sqlite:///banco.db")
@@ -30,7 +30,7 @@ class Pedido(Base):
     status = Column("status", String)
     usuario = Column("usuario", ForeignKey("usuarios.id") )
     preco = Column("preco", Float)
-    #Itens = 
+    Itens = relationship("ItemPedido", cascade="all, delete")
 
     def __init__(self,usuario,status = "PENDENTE",preco = 0):
         self.usuario = usuario
@@ -38,7 +38,13 @@ class Pedido(Base):
         self.status = status    
 
     def calcular_preco(self):
-        self.preco = 10
+        preco_pedido = 0
+        for item in self.Itens:
+            preco_item = item.preco_unitario * item.quantidade
+            preco_pedido += preco_item
+        
+        
+        self.preco = preco_pedido
 
 
 class ItemPedido(Base):
@@ -58,3 +64,5 @@ class ItemPedido(Base):
         self.pedido = pedido
 
 
+#migrar o bd: alembic revision --autogenerate -m "Alterar Pedidos"
+#executar a migração: alembic upgrade head
