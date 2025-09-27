@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from dependency import pegar_funcao
 from sqlalchemy.orm import Session
 from dependency import pegar_funcao, verificar_token, Usuario
-from schemas import PedidoSchema, ItemPedidoSchema
+from schemas import PedidoSchema, ItemPedidoSchema, ResponsePedidoSchema
 from models import Pedido, ItemPedido
+from typing import List
 
 
 order_router = APIRouter(prefix="/pedidos",tags=["pedidos"], dependencies=[Depends(verificar_token)] )
@@ -110,3 +111,9 @@ async def visualizar_pedido(id_pedido: int,
         "quantidade de itens": len(pedido.Itens),
         "pedido": pedido
     }
+
+ 
+@order_router.get("/listar/pedidos-usuario", response_model=List[ResponsePedidoSchema])
+async def listar_pedidos_todos_pedidos(session: Session = Depends(pegar_funcao), usuario : Usuario = Depends(verificar_token)):
+    pedidos = session.query(Pedido).filter(Pedido.usuario == usuario.id).all()
+    return pedidos
