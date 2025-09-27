@@ -64,5 +64,6 @@ class ItemPedido(Base):
         self.pedido = pedido
 
 
+
 #migrar o bd: alembic revision --autogenerate -m "Alterar Pedidos"
 #executar a migração: alembic upgrade head
