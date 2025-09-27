@@ -11,8 +11,8 @@ Projeto de gestão de pedidos para um delivery.
 
 ## ⚙️ Como rodar o projeto
 ```bash
-git clone https://github.com/seuusuario/seuprojeto.git
-cd seuprojeto
+git clone https://github.com/Gere-santos/Projeto_FastApi.git
+cd Projeto_FastApi
 pip install -r requirements.txt
 uvicorn main:app --reload
 
